@@ -30,16 +30,25 @@ source ~/.bashrc
 ```
 
 4. zookeeper properties
-    * path: `/etc/kafka/zookeeper.properties`
+
+```
+${CONFLUENT_HOME}/etc/kafka/zookeeper.properties
+```
 
 6. Kafka properties
-    * path: `/etc/kafka/server.properties`
 
+```
+${CONFLUENT_HOME}/etc/kafka/server.properties
+```
 
 7. schema registry properties
-    * path: `/etc/schema-registry/schema-registry.properties`
 
-8. start All components:
+```
+${CONFLUENT_HOME}/etc/schema-registry/schema-registry.properties
+```
+
+----
+start All components:
 
 ```
 zookeeper-server-start ${CONFLUENT_HOME}/etc/kafka/zookeeper.properties
