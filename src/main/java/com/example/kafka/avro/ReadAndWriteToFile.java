@@ -1,6 +1,7 @@
 package com.example.kafka.avro;
 
 import com.example.Customer;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.io.DatumReader;
@@ -11,9 +12,14 @@ import org.apache.avro.specific.SpecificDatumWriter;
 import java.io.File;
 import java.io.IOException;
 
+@Slf4j
 public class ReadAndWriteToFile {
 
     private static String FILE_PATH = "src/main/sample/customer-specific.avro";
+
+    /**
+     * Method to Write avro data to file
+     */
 
     public void writeAvroToDataFile(Customer customer) {
         final DatumWriter<Customer> datumWriter = new SpecificDatumWriter<>(Customer.class);
@@ -23,24 +29,25 @@ public class ReadAndWriteToFile {
             dataFileWriter.append(customer);
             System.out.println("successfully wrote customer-specific.avro");
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception while writing data - {}", String.valueOf(e));
         }
     }
+
+    /**
+     * Method to Read avro data from file
+     */
 
     public void readAvroDataFromFile() {
         final File file = new File(FILE_PATH);
         final DatumReader<Customer> datumReader = new SpecificDatumReader<>(Customer.class);
-        final DataFileReader<Customer> dataFileReader;
-        try {
-            System.out.println("Reading our specific record");
-            dataFileReader = new DataFileReader<>(file, datumReader);
+        System.out.println("Reading our specific record");
+        try (DataFileReader<Customer> dataFileReader = new DataFileReader<>(file, datumReader)) {
             while (dataFileReader.hasNext()) {
                 Customer readCustomer = dataFileReader.next();
                 System.out.println(readCustomer.toString());
-                System.out.println("First name: " + readCustomer.getFirstName());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception while reading data - {}", String.valueOf(e));
         }
     }
 

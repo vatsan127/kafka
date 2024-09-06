@@ -1,7 +1,9 @@
 package com.example.kafka.avro;
 
 import com.example.Customer;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AvroProcessing {
     public void generateAvroData() {
 
