@@ -1,31 +1,53 @@
 package com.example.kafka.avro;
 
 import com.example.TestAvro;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+import com.example.kafka.config.KafkaConfig;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-@Service
-public class AvroMessageKafkaProducer implements Runnable {
+@Slf4j
+@Component
+public class AvroMessageKafkaProducer {
 
-    @Autowired
-    private KafkaTemplate kafkaTemplate;
+    private KafkaConfig config;
 
-    @Override
-    public void run() {
+    public AvroMessageKafkaProducer(KafkaConfig config) {
+        this.config = config;
+    }
+
+    private Properties getStringTestAvroKafkaProducer() {
+        Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getBootstrapServers());
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
+        properties.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, config.getSchemaRegistryUrl());
+        return properties;
+    }
+
+    public void sendKafkaMessage() throws InterruptedException {
+        KafkaProducer<String, TestAvro> producer = new KafkaProducer<>(getStringTestAvroKafkaProducer());
         while (true) {
             TestAvro.Builder testAvroBuilder = TestAvro.newBuilder();
             testAvroBuilder.setLocalDateTime(String.valueOf(LocalDateTime.now()));
             TestAvro testAvro = testAvroBuilder.build();
-            kafkaTemplate.sendDefault(testAvro);
-            try {
-                TimeUnit.SECONDS.sleep(20);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            log.info("AvroMessageKafkaProducer :: testAvro  :: {}", testAvro);
+
+            ProducerRecord<String, TestAvro> record = new ProducerRecord<>(config.getAvroTopic(), testAvro);
+            producer.send(record);
+            log.info("AvroMessageKafkaProducer :: message sent successful");
+            TimeUnit.SECONDS.sleep(30);
+
         }
     }
+
 }

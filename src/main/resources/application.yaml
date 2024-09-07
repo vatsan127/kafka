@@ -1,22 +1,14 @@
 server:
   servlet:
-    context-path:
-  port: 9800
+    context-path: /
+  port: 8080
 
 spring:
   application:
     name: kafka
-  kafka:
+
+kafka:
+  properties:
     bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
-    consumer:
-      group-id: kafka
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-    template:
-      default-topic: demo-topic
-    properties:
-      schema.registry.url: localhost:8081
-      specific.avro.reader: true
+    schema-registry-url: http://localhost:8081
+    avro-topic: CUSTOMERTOPIC
