@@ -1,0 +1,21 @@
+kafka-topics --bootstrap-server localhost:9092 --list
+kafka-topics --bootstrap-server localhost:9092 --delete --topic CONSUMERTOPIC
+kafka-topics --bootstrap-server localhost:9092 --create --topic test-topic --replication-factor 1 --partitions 1
+kafka-topics --bootstrap-server localhost:9092 --describe
+kafka-topics --bootstrap-server localhost:9092 --describe --topic test-topic
+kafka-topics --bootstrap-server localhost:9092 --alter --topic test-topic --partitions 40
+
+
+
+kafka-avro-console-producer \
+    --broker-list localhost:9092 --topic CUSTOMERTOPIC \
+    --property schema.registry.url=http://localhost:8081 \
+    --property value.schema='{"type":"record","name":"TestAvro","namespace":"com.example","fields":[{"type":"string","name":"LocalDateTime","doc":"LocalDateTime in string "}]}'
+
+
+{"LocalDateTime":"FROM KAFKA PRODUCER"}
+
+kafka-avro-console-consumer --topic demo-topic \
+    --bootstrap-server localhost:9092 \
+    --property schema.registry.url=http://localhost:8081 \
+    --from-beginning

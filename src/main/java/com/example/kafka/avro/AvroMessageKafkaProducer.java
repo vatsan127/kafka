@@ -11,7 +11,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +40,9 @@ public class AvroMessageKafkaProducer {
         KafkaProducer<String, TestAvro> producer = new KafkaProducer<>(getStringTestAvroKafkaProducer());
         while (true) {
             TestAvro.Builder testAvroBuilder = TestAvro.newBuilder();
-            testAvroBuilder.setLocalDateTime(String.valueOf(LocalDateTime.now()));
+            testAvroBuilder.setLocalDateTime(
+                    String.valueOf(LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Kolkata")))
+            );
             TestAvro testAvro = testAvroBuilder.build();
             log.info("AvroMessageKafkaProducer :: testAvro  :: {}", testAvro);
 
