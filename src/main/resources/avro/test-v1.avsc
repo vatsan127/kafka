@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "TestAvro",
+  "namespace": "com.example",
+  "fields": [
+    {
+      "type": "string",
+      "name": "LocalDateTime",
+      "doc": "LocalDateTime in string "
+    }
+  ]
+}

@@ -8,11 +8,14 @@ import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificDatumWriter;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 
+
 @Slf4j
+@Component
 public class ReadAndWriteToFile {
 
     private static String FILE_PATH = "src/main/sample/customer-specific.avro";
