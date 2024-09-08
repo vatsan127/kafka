@@ -9,17 +9,15 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@Component
-public class AvroMessageKafkaProducer {
+public class AvroMessageKafkaProducer implements Runnable {
 
     private KafkaConfig config;
 
@@ -39,19 +37,26 @@ public class AvroMessageKafkaProducer {
     public void sendKafkaMessage() throws InterruptedException {
         KafkaProducer<String, TestAvro> producer = new KafkaProducer<>(getStringTestAvroKafkaProducer());
         while (true) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             TestAvro.Builder testAvroBuilder = TestAvro.newBuilder();
             testAvroBuilder.setLocalDateTime(
-                    String.valueOf(LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Kolkata")))
+                    LocalDateTime.now(ZoneId.of("Asia/Kolkata")).format(formatter)
             );
             TestAvro testAvro = testAvroBuilder.build();
-            log.info("AvroMessageKafkaProducer :: testAvro  :: {}", testAvro);
 
             ProducerRecord<String, TestAvro> record = new ProducerRecord<>(config.getAvroTopic(), testAvro);
             producer.send(record);
-            log.info("AvroMessageKafkaProducer :: message sent successful");
-            TimeUnit.SECONDS.sleep(30);
-
+            log.info("AvroMessageKafkaProducer :: message sent :: {} ", testAvro);
+            TimeUnit.SECONDS.sleep(10);
         }
     }
 
+    @Override
+    public void run() {
+        try {
+            sendKafkaMessage();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

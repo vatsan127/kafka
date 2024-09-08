@@ -15,6 +15,7 @@ public class KafkaConfig {
     private String bootstrapServers;
     private String schemaRegistryUrl;
     private String avroTopic;
+    private String groupId;
 
     @PostConstruct
     public void init() {

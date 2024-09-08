@@ -15,7 +15,7 @@ kafka-avro-console-producer \
 
 {"LocalDateTime":"FROM KAFKA PRODUCER"}
 
-kafka-avro-console-consumer --topic demo-topic \
+kafka-avro-console-consumer --topic CUSTOMERTOPIC \
     --bootstrap-server localhost:9092 \
     --property schema.registry.url=http://localhost:8081 \
     --from-beginning

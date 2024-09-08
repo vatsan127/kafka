@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Service
 public class AvroData {
 
@@ -18,9 +21,6 @@ public class AvroData {
     @Autowired
     private ReadAndWriteToFile readAndWriteToFile;
 
-    @Autowired
-    private AvroMessageKafkaProducer avroMessageKafkaProducer;
-
     public void generateAvroMessage() throws InterruptedException {
         log.info("AvroData :: generateAvroMessage");
 
@@ -28,7 +28,11 @@ public class AvroData {
         processAvroWithFile();
         */
 
-        avroMessageKafkaProducer.sendKafkaMessage();
+        ExecutorService publishMessageService = Executors.newSingleThreadExecutor();
+        publishMessageService.submit(new AvroMessageKafkaProducer(config));
+
+        ExecutorService pollKafkaService = Executors.newSingleThreadExecutor();
+        pollKafkaService.submit(new AvroMessageKafkaConsumer(config));
 
     }
 
